@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% if title is defined %}
+{% block head %}
+<title>{{ title }} | Marketing Agency</title>
+{% endblock %}
+{% endif %}
+{% block body %}
+<div class="container-xl">
+	<span class="display-1">Leads</span>
+	<p class="mt-2">Below is the list of leads for This.</p>
+	<button type="button" class="btn btn-primary btn-lg px-5 mb-2" hx-put="{{ url_for('campaign.sync_transactions', camp_id=camp_id) }}" hx-disabled-elt="this" hx-indicator="#sync-spinner">Sync leads</button>
+	<button type="button" class="btn btn-primary btn-lg px-5 mb-2" hx-put="{{ url_for('campaign.sync_mails', camp_id=camp_id) }}" hx-disabled-elt="this" hx-indicator="#sync-spinner">Sync mails</button>
+	<button type="button" class="btn btn-primary btn-lg px-5 mb-2" hx-put="{{ url_for('campaign.sync_calls', camp_id=camp_id) }}" hx-disabled-elt="this" hx-indicator="#sync-spinner">Sync calls</button>
+	<span class="htmx-indicator" id="sync-spinner">
+		<div class="spinner-border" role="status">
+			<span class="visually-hidden">Loading...</span>
+		</div>
+	</span>
+	<div class="card card-body my-2">
+		<div class="btn-group" role="group">
+			<input type="radio" class="btn-check" name="btnradio" id="leads-btn" autocomplete="off" checked>
+			<label class="btn btn-outline-info" for="leads-btn" data-bs-toggle="collapse" data-bs-target="#show-leads" aria-controls="collapse-example" hx-get="{{ url_for('campaign.list_leads', camp_id=camp_id) }}" hx-target="#show-leads" hx-indicator="#bank-transactions-spinner"  hx-trigger="load, click">Leads</label>
+			<input type="radio" class="btn-check" name="btnradio" id="bank-btn" autocomplete="off">
+			<label class="btn btn-outline-info" for="bank-btn" data-bs-toggle="collapse" data-bs-target="#show-transactions" aria-expand="false" aria-controls="collapse-example" hx-get="{{ url_for('campaign.get_bank_transactions', camp_id=camp_id) }}" hx-target="#show-transactions" hx-indicator="#bank-transactions-spinner">Bank transactions</label>
+			<input type="radio" class="btn-check" name="btnradio" id="mail-btn" autocomplete="off">
+			<label class="btn btn-outline-info" for="mail-btn" data-bs-toggle="collapse" data-bs-target="#show-mails" aria-expand="false" aria-controls="collapse-example" hx-get="{{ url_for('campaign.get_mail_invoices', camp_id=camp_id) }}" hx-target="#show-mails" hx-indicator="#bank-transactions-spinner">Mail Invoices</label>
+			<input type="radio" class="btn-check" name="btnradio" id="call-btn" autocomplete="off">
+			<label class="btn btn-outline-info" for="call-btn" data-bs-toggle="collapse" data-bs-target="#show-calls" aria-expand="false" aria-controls="collapse-example" hx-get="{{ url_for('campaign.get_call_recording', camp_id=camp_id) }}" hx-target="#show-calls" hx-indicator="#bank-transactions-spinner">Calls</label>
+		</div>
+		<span class="htmx-indicator" id="bank-transactions-spinner">
+			<div class="spinner-border" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		</span>
+	</div>
+	<div class="collapse show" id="show-leads">
+	</div>
+	<div class="collapse" id="show-transactions">
+		<p>WIP</p>
+	</div>
+	<div class="collapse" id="show-mails">
+	</div>
+	<div class="collapse" id="show-calls">
+	</div>
+</div>
+{% endblock %}

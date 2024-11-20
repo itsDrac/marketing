@@ -1,0 +1,13 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+	<div class="container-md my-2">
+	{% for category, message in messages %}
+		<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+			<!-- TODO: Add icons based on category -->
+			{{ message }}
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	{% endfor %}
+	</div>
+{% endif %}
+{% endwith %}

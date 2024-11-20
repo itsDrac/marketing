@@ -1,0 +1,54 @@
+{% from 'macros/form.html' import render_field %}
+{% extends 'base.html' %}
+{% if title is defined %}
+{% block head %}
+<title>{{ title }} | Marketing Agency</title>
+{% endblock %}
+{% endif %}
+{% block body %}
+<div class="container-xl">
+	<span class="display-1">Clients</span>
+	<p class="mt-2">Below is the list of clients which were added to {{ current_user.name }} marketing agency.</p>
+	<button type="button" class="btn btn-primary btn-lg px-5 mb-4" data-bs-toggle="modal" data-bs-target="#addClientModal">Add Client</button>
+	{% include "list_clients.html" ignore missing with context %}
+</div>
+<!-- Model section -->
+<div class="modal fade" id="addClientModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addClientModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="addClientModalLabel">
+					Add Client
+				</h5>
+				<span class="d-inline htmx-indicator text-info" id="form-indicator">
+					<ins role="status">Adding Client</ins>
+					<span class="spinner-grow ms-auto"></span>
+				</span>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true"></span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form class="needs-validation" hx-post="{{ url_for('agency.list_clients') }}" hx-target="#client-table-body" hx-swap="afterbegin" novalidate id="add-client-form" hx-indicator="#form-indicator" hx-disabled-elt="this">
+					{{ form.hidden_tag() }}
+					{{ form.name.label(class_="form-label my-2") }}
+					{{ render_field(form.name, class_="form-control"+(" is-invalid" if form.name.errors else ""), placeholder="My client name") }}
+					{{ form.email.label(class_="form-label my-2") }}
+					{{ render_field(form.email, class_="form-control"+(" is-invalid" if form.email.errors else ""), placeholder="example@gmail.com") }}
+					{{ form.phone.label(class_="form-label my-2") }}
+					{{ render_field(form.phone, class_="form-control"+(" is-invalid" if form.email_password.errors else "")) }}
+					{{ form.email_password.label(class_="form-label my-2") }}
+					{{ render_field(form.email_password, class_="form-control"+(" is-invalid" if form.email_password.errors else "")) }}
+					{{ form.email_server.label(class_="form-label my-2") }}
+					{{ render_field(form.email_server, class_="form-select"+(" is-invalid" if form.email_server.errors else "")) }}
+					{{ form.aircall_id.label(class_="form-label my-2") }}
+					{{ render_field(form.aircall_id, class_="form-control"+(" is-invalid" if form.aircall_id.errors else "")) }}
+					{{ form.aircall_key.label(class_="form-label my-2") }}
+					{{ render_field(form.aircall_key, class_="form-control"+(" is-invalid" if form.aircall_key.errors else "")) }}
+					{{ render_field(form.submit, class_="btn btn-success my-2 px-4 py-2") }}
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock body %}

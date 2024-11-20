@@ -1,0 +1,13 @@
+<tr>
+	<th scope="row">
+		{% if loop is defined %}
+		{{ loop.index }}
+		{% else %}
+		0
+		{% endif %}
+	</th>
+	<td>{{ lead.fullname }}</td>
+	<td>{{ lead.email }}</td>
+	<td>{{ lead.phone }}</td>
+	<td>{{ lead.address }}</td>
+</tr>

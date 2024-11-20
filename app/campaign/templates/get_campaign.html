@@ -1,0 +1,22 @@
+<tr>
+	<th scope="row">
+		{% if loop is defined %}
+		{{ loop.index }}
+		{% else %}
+		0
+		{% endif %}
+	</th>
+	<td>{{ campaign.name }}</td>
+	<td>{{ campaign.token }}</td>
+	<td>{{ campaign.start_date }}</td>
+	<td>
+	{% if campaign.end_date %}
+	{{ campaign.end_date }}
+	{% else %}
+	<span class="fw-light">On going</span>
+	{% endif %}
+	</td>
+	<td><a href="{{ url_for('campaign.show_campaign', camp_id=campaign.id) }}" class="btn btn-outline-primary px-2">View leads</a></td>
+	<td><a href="#" class="btn btn-outline-info px-2">edit</a></td>
+	<td>Delete</td>
+</tr>

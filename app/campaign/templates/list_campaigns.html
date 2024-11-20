@@ -1,0 +1,22 @@
+<table class="table table-striped table-hover table-bordered">
+	<thead>
+		<tr>
+			<th scope="col">#</th>
+			<th scope="col">Name</th>
+			<th scope="col">token</th>
+			<th scope="col">start_date</th>
+			<th scope="col">end_date</th>
+			<th scope="col" colspan="3">Actions</th>
+		</tr>
+	</thead>
+	<tbody class="table-group-divider" id="campaign-table-body">
+		{% set ns = namespace(total=0) %}
+		{% for campaign in campaigns %}
+		{% if loop.first %}
+		{% set ns.total = loop.length %}
+		{% endif %}
+			{% include "get_campaign.html" with context %}
+		{% endfor %}
+	</tbody>
+	<caption>Total campaigns: {{ ns.total }}</caption>
+</table>

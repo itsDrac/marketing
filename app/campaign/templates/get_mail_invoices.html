@@ -1,0 +1,29 @@
+<table class="table table-striped table-hover table-bordered">
+	<thead>
+		<tr>
+			<th scope="col">#</th>
+			<th scope="col">Full name</th>
+			<th scope="col">Email</th>
+			<th scope="col">Phone</th>
+			<th scope="col">Subject</th>
+			<th scope="col">Date</th>
+			<th scope="col">Amount</th>
+		</tr>
+	</thead>
+	<tbody class="table-group-divider" id="campaign-table-body">
+		{% set ns = namespace(total=0) %}
+		{% for invoice in invoices %}
+		<tr>
+			<th scope="row">{{ loop.index }}</th>
+			<td>{{ invoice.lead.fullname }}</td>
+			<td>{{ invoice.lead.email }}</td>
+			<td>{{ invoice.lead.phone }}</td>
+			<td>{{ invoice.subject }}</td>
+			<td>{{ invoice.date }}</td>
+			<td>{{ invoice.amount }}</td>
+		</tr>
+		{% set ns.total = ns.total + invoice.amount %}
+		{% endfor %}
+	</tbody>
+	<caption>Total income: {{ ns.total }}</caption>
+</table>

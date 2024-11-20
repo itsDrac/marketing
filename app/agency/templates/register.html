@@ -1,0 +1,40 @@
+{% from 'macros/form.html' import render_field %}
+{% extends 'base.html' %}
+{% if title is defined %}
+{% block head %}
+<title>{{ title }} | Marketing Agency</title>
+{% endblock %}
+{% endif %}
+{% block body %}
+<div class="row gy-4 justify-content-center">
+	<div class="col-12"></div>
+	<div class="col-8">
+		<div class="card">
+			<div class="card-header">
+				<h2>Register Form</h2>
+			</div>
+			<div class="card-body">
+				<form class="row gy-2 needs-validation {% if form.errors %}was-validated{% endif %}" method="POST" novalidate>
+					{{ form.hidden_tag() }}
+					{{ form.name.label(class_="form-label") }}
+					{{ render_field(form.name, class_="form-control"+( "is-invalid" if form.name.errors else ""), placeholder="Marketing Agency") }}
+					{{ form.email.label(class_="form-label") }}
+					{{ render_field(form.email, class_="form-control"+(" is-invalid" if form.email.errors else ""), placeholder="marketing@agency.com") }}
+					<div class="col-6">
+						{{ form.password.label(class_="form-label") }}
+						{{ render_field(form.password, class_="form-control"+(" is-invalid" if form.password.errors else "")) }}
+					</div>
+					<div class="col-6">
+						{{ form.confirm.label(class_="form-label") }}
+						{{ render_field(form.confirm, class_="form-control"+(" is-invalid" if form.confirm.errors else "")) }}
+					</div>
+					<div class="col-12">
+						{{ render_field(form.submit, class_="btn btn-primary") }}
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock body %}

@@ -1,0 +1,17 @@
+<tr>
+	<th scope="row">
+		{% if loop is defined %}
+		{{ loop.index }}
+		{% else %}
+		0
+		{% endif %}
+	</th>
+	<td>{{ client.name }}</td>
+	<td>{{ client.email }}</td>
+	<td>{{ client.phone }}</td>
+	<td><a href="{{ url_for('client.list_campaigns', client_id=client.id) }}" class="btn btn-outline-info px-2">View campaigns</a></td>
+	<td><a href="{{ url_for('client.edit_client', client_id=client.id) }}" class="btn btn-outline-warning px-2">Edit</a></td>
+	<td hx-delete="{{ url_for('client.delete_client', client_id=client.id) }}" hx-trigger="click" hx-target="closest tr" hx-swap="delete" hx-confirm="Are you sure you wish to delete client {{ client.name }}">
+		<button class="btn btn-outline-danger px-2">Delete</button>
+	</td>
+</tr>

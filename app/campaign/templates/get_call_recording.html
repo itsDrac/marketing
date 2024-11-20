@@ -1,0 +1,46 @@
+<table class="table table-striped table-hover table-bordered">
+	<thead>
+		<tr>
+			<th scope="col">#</th>
+			<th scope="col">Lead name</th>
+			<th scope="col">Lead Email</th>
+			<th scope="col">Phone</th>
+			<th scope="col">date</th>
+			<th scope="col">Length of call</th>
+			<th scope="col">Flow of call</th>
+			<th scope="col">transaction</th>
+		</tr>
+	</thead>
+	<tbody class="table-group-divider" id="campaign-table-body">
+		{% for recording in recordings %}
+		<tr>
+			<th scope="row">{{ loop.index }}</th>
+			<td>{{ recording.lead.fullname }}</td>
+			<td>{{ recording.lead.email }}</td>
+			<td>{{ recording.number }}</td>
+			<td>{{ recording.date.strftime("%d-%b-%Y %I:%M:%S %p") }}</td>
+			<td>{{ recording.duration }} secs</td>
+			<td>{{ recording.direction }}</td>
+			<td>
+				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#transcriptionModel" hx-put="{{ url_for('lead.get_transcription', tran_id=recording.id) }}" hx-target="#call-transcription" hx-disabled-elt="this">
+					view transcription
+				</button>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<div class="modal fade" id="transcriptionModel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-xl">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="exampleModalLabel">Transcription</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<pre id="call-transcription"></pre>
+			</div>
+		</div>
+	</div>
+</div>
