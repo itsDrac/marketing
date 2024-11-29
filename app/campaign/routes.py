@@ -10,10 +10,11 @@ from app.models import (
 )
 from app.mails import MailHelper
 from app.calls import CallHelper
+from app.reports import ReportHelper
 from app.client.bank_handler import get_transactions
 from app.utils import current_agency, new_transactions
 from app.campaign import bp
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, Response
 from flask_login import login_required
 from datetime import date
 
@@ -191,9 +192,7 @@ def sync_calls():
         )
         existingLead = db.session.scalar(q)
         transaction = helper.get_call_transcription(call)
-        from pprint import pprint
-        pprint(call)
-        # TODO: convert call date(unix date format to python date type)
+        # convert call date(unix date format to python date type)
         newCall = CallRecordModel(
             call_id=call["id"],
             duration=call["duration"],
@@ -210,6 +209,38 @@ def sync_calls():
     return "Calls Synced"
 
 
+@bp.route("/get-all-calls")
+def get_all_calls():
+    campaign_id = request.args.get("camp_id")
+    q = (
+        db.select(ClientModel, CampaignModel)
+        .join(ClientModel, CampaignModel.client_id == ClientModel.id)
+        .where(CampaignModel.id == campaign_id)
+        .where(ClientModel.agency_id == current_agency.id)
+        )
+    data = db.session.execute(q).one_or_none()
+    if not data:
+        return "No Campaign found"
+    existingClient, existingCampaign = data
+    helper = CallHelper(existingClient)
+    calls = helper.get_calls(existingCampaign)
+    newCalls = []
+    for call in calls['calls']:
+        transaction = helper.get_call_transcription(call)
+        # convert call date(unix date format to python date type)
+        newCall = {
+            "call_id": call["id"],
+            "duration": call["duration"],
+            "date": helper.convert_date(call["started_at"]),
+            "summary": transaction,
+            "recording": call["recording"],
+            "number": call['raw_digits'],
+            "direction": call["direction"],
+        }
+        newCalls.append(newCall)
+    return render_template("all-calls.html", calls=newCalls)
+
+
 @bp.route("/get-call-recording")
 def get_call_recording():
     campaign_id = request.args.get("camp_id")
@@ -220,3 +251,83 @@ def get_call_recording():
     )
     callRecordings = db.session.scalars(q).all()
     return render_template("get_call_recording.html", recordings=callRecordings)
+
+
+@bp.route("/get-lead-report")
+@login_required
+def get_lead_report():
+    campaign_id = request.args.get("camp_id")
+    q = (
+        db.select(CampaignModel)
+        .join(ClientModel, CampaignModel.client_id == ClientModel.id)
+        .where(ClientModel.id == current_agency.id)
+        .where(CampaignModel.id == campaign_id)
+    )
+    existingCampaign = db.session.scalar(q)
+    if not existingCampaign:
+        return "In correct campaign is", 404
+    helper = ReportHelper(existingCampaign)
+    output = helper.lead_report()
+    response = Response(output.getvalue(), mimetype='text/csv; charset=utf-8')
+    response.headers['Content-Disposition'] = f'attachment; filename={existingCampaign.name}_lead.csv'  # noqa: E501
+    return response
+
+
+@bp.route("/get-bank-report")
+@login_required
+def get_bank_report():
+    campaign_id = request.args.get("camp_id")
+    q = (
+        db.select(CampaignModel)
+        .join(ClientModel, CampaignModel.client_id == ClientModel.id)
+        .where(ClientModel.id == current_agency.id)
+        .where(CampaignModel.id == campaign_id)
+    )
+    existingCampaign = db.session.scalar(q)
+    if not existingCampaign:
+        return "In correct campaign is", 404
+    helper = ReportHelper(existingCampaign)
+    output = helper.bank_report()
+    response = Response(output.getvalue(), mimetype='text/csv; charset=utf-8')
+    response.headers['Content-Disposition'] = f'attachment; filename={existingCampaign.name}_bank.csv'  # noqa: E501
+    return response
+
+
+@bp.route("/get-call-report")
+@login_required
+def get_call_report():
+    campaign_id = request.args.get("camp_id")
+    q = (
+        db.select(CampaignModel)
+        .join(ClientModel, CampaignModel.client_id == ClientModel.id)
+        .where(ClientModel.id == current_agency.id)
+        .where(CampaignModel.id == campaign_id)
+    )
+    existingCampaign = db.session.scalar(q)
+    if not existingCampaign:
+        return "In correct campaign is", 404
+    helper = ReportHelper(existingCampaign)
+    output = helper.call_report()
+    response = Response(output.getvalue(), mimetype='text/csv; charset=utf-8')
+    response.headers['Content-Disposition'] = f'attachment; filename={existingCampaign.name}_call.csv'  # noqa: E501
+    return response
+
+
+@bp.route("/get-mail-report")
+@login_required
+def get_mail_report():
+    campaign_id = request.args.get("camp_id")
+    q = (
+        db.select(CampaignModel)
+        .join(ClientModel, CampaignModel.client_id == ClientModel.id)
+        .where(ClientModel.id == current_agency.id)
+        .where(CampaignModel.id == campaign_id)
+    )
+    existingCampaign = db.session.scalar(q)
+    if not existingCampaign:
+        return "In correct campaign is", 404
+    helper = ReportHelper(existingCampaign)
+    output = helper.mail_report()
+    response = Response(output.getvalue(), mimetype='text/csv; charset=utf-8')
+    response.headers['Content-Disposition'] = f'attachment; filename={existingCampaign.name}_mail.csv'  # noqa: E501
+    return response

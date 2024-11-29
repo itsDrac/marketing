@@ -6,7 +6,7 @@ current_agency = current_user
 
 email_server_choices = [
     ("None", "Not Selected"),
-    ("gmail", "Gamil"),
+    ("gmail", "Gmail"),
     ("outlook", "Outlook"),
     ("t-online", "T online"),
     ("web.de", "Web de"),

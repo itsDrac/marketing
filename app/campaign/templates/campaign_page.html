@@ -8,9 +8,17 @@
 <div class="container-xl">
 	<span class="display-1">Leads</span>
 	<p class="mt-2">Below is the list of leads for This.</p>
-	<button type="button" class="btn btn-primary btn-lg px-5 mb-2" hx-put="{{ url_for('campaign.sync_transactions', camp_id=camp_id) }}" hx-disabled-elt="this" hx-indicator="#sync-spinner">Sync leads</button>
-	<button type="button" class="btn btn-primary btn-lg px-5 mb-2" hx-put="{{ url_for('campaign.sync_mails', camp_id=camp_id) }}" hx-disabled-elt="this" hx-indicator="#sync-spinner">Sync mails</button>
-	<button type="button" class="btn btn-primary btn-lg px-5 mb-2" hx-put="{{ url_for('campaign.sync_calls', camp_id=camp_id) }}" hx-disabled-elt="this" hx-indicator="#sync-spinner">Sync calls</button>
+	<div class="block">
+		<button type="button" class="btn btn-primary btn-lg px-5 mb-2" hx-put="{{ url_for('campaign.sync_transactions', camp_id=camp_id) }}" hx-disabled-elt="this" hx-indicator="#sync-spinner">Sync Bank transactions</button>
+		<button type="button" class="btn btn-primary btn-lg px-5 mb-2" hx-put="{{ url_for('campaign.sync_mails', camp_id=camp_id) }}" hx-disabled-elt="this" hx-indicator="#sync-spinner">Sync mails</button>
+		<button type="button" class="btn btn-primary btn-lg px-5 mb-2" hx-put="{{ url_for('campaign.sync_calls', camp_id=camp_id) }}" hx-disabled-elt="this" hx-indicator="#sync-spinner">Sync calls</button>
+	</div>
+	<div class="block">
+		<a class="btn btn-outline-warning px-5 mb-2" href="{{ url_for('campaign.get_lead_report', camp_id=camp_id) }}" download>download leads report</a>
+		<a class="btn btn-outline-warning px-5 mb-2" href="{{ url_for('campaign.get_mail_report', camp_id=camp_id) }}" download>download mails report</a>
+		<a class="btn btn-outline-warning px-5 mb-2" href="{{ url_for('campaign.get_bank_report', camp_id=camp_id) }}" download>download bank report</a>
+		<a class="btn btn-outline-warning px-5 mb-2" href="{{ url_for('campaign.get_call_report', camp_id=camp_id) }}" download>download call report</a>
+	</div>
 	<span class="htmx-indicator" id="sync-spinner">
 		<div class="spinner-border" role="status">
 			<span class="visually-hidden">Loading...</span>
@@ -26,21 +34,26 @@
 			<label class="btn btn-outline-info" for="mail-btn" data-bs-toggle="collapse" data-bs-target="#show-mails" aria-expand="false" aria-controls="collapse-example" hx-get="{{ url_for('campaign.get_mail_invoices', camp_id=camp_id) }}" hx-target="#show-mails" hx-indicator="#bank-transactions-spinner">Mail Invoices</label>
 			<input type="radio" class="btn-check" name="btnradio" id="call-btn" autocomplete="off">
 			<label class="btn btn-outline-info" for="call-btn" data-bs-toggle="collapse" data-bs-target="#show-calls" aria-expand="false" aria-controls="collapse-example" hx-get="{{ url_for('campaign.get_call_recording', camp_id=camp_id) }}" hx-target="#show-calls" hx-indicator="#bank-transactions-spinner">Calls</label>
+			<input type="radio" class="btn-check" name="btnradio" id="all-call-btn" autocomplete="off">
+			<label class="btn btn-outline-info" for="all-call-btn" data-bs-toggle="collapse" data-bs-target="#show-all-calls" aria-expand="false" aria-controls="collapse-example" hx-get="{{ url_for('campaign.get_all_calls', camp_id=camp_id) }}" hx-target="#show-all-calls" hx-indicator="#bank-transactions-spinner">All Calls</label>
 		</div>
+	</div>
+	<span id="collapsible-area">
 		<span class="htmx-indicator" id="bank-transactions-spinner">
-			<div class="spinner-border" role="status">
+			<span class="spinner-border" role="status">
 				<span class="visually-hidden">Loading...</span>
-			</div>
+			</span>
 		</span>
-	</div>
-	<div class="collapse show" id="show-leads">
-	</div>
-	<div class="collapse" id="show-transactions">
-		<p>WIP</p>
-	</div>
-	<div class="collapse" id="show-mails">
-	</div>
-	<div class="collapse" id="show-calls">
-	</div>
+		<div class="collapse show" id="show-leads" data-bs-parent="#collapsible-area">
+		</div>
+		<div class="collapse" id="show-transactions" data-bs-parent="#collapsible-area">
+		</div>
+		<div class="collapse" id="show-mails" data-bs-parent="#collapsible-area">
+		</div>
+		<div class="collapse" id="show-calls" data-bs-parent="#collapsible-area">
+		</div>
+		<div class="collapse" id="show-all-calls" data-bs-parent="#collapsible-area">
+		</div>
+	</span>
 </div>
 {% endblock %}

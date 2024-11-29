@@ -61,9 +61,9 @@ class CallHelper:
         res = rq.get(AIRCALL_URL+f"/calls/{call['id']}/transcription", headers=headers)
         # Check if the participant_type is external then add lead before the text.
         if not res.status_code == 200:
-            print("calls.py| l:64", res.json())
+            print("calls.py| l:64", res.json(), res.status_code)
             if res.status_code == 404:
-                return "Transcription is not avaliable for this call"
+                return "Transcription is not available for this call"
             return "Error in getting transcription"
         transcription = ""
         data = res.json()

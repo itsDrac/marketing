@@ -11,6 +11,7 @@
 				<a class="nav-link {% if (request.url_rule | string).endswith('login') %}active{% endif %}" href="{{ url_for('agency.login') }}">Login</a>
 				<a class="nav-link {% if (request.url_rule | string).endswith('register') %}active{% endif %}" href="{{ url_for('agency.register') }}">Register</a>
 				{% else %}
+				<a class="nav-link {% if (request.url_rule | string).endswith('clients') %}active{% endif %}" href="{{ url_for('agency.list_clients') }}">Clients</a>
 				<a class="nav-link {% if (request.url_rule | string).endswith('register') %}active{% endif %}" href="{{ url_for('agency.logout') }}">Logout</a>
 				{% endif %}
 			</div>
