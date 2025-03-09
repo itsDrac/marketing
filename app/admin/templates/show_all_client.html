@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% if title is defined %}
+{% block head %}
+<title>{{ title }} | Marketing Agency</title>
+{% endblock %}
+{% endif %}
+{% block body %}
+<div class="container-xl">
+	<span class="display-1">Clients</span>
+	<p class="mt-2">Below is the list of clients which were added to {{ agency_name }} marketing agency.</p>
+	<table class="table table-striped table-hover table-bordered">
+		<thead>
+			<tr>
+				<th scope="col">#</th>
+				<th scope="col">Name</th>
+				<th scope="col">Email</th>
+				<th scope="col">Phone</th>
+				<th scope="col">Number of campaigns</th>
+				<th scope="col" colspan="1">Actions</th>
+			</tr>
+		</thead>
+		<tbody class="table-group-divider" id="client-table-body">
+			{% set ns = namespace(total=0) %}
+			{% for client in clients %}
+			{% if loop.first %}
+			{% set ns.total = loop.length %}
+			{% endif %}
+			<tr>
+				<th scope="row">
+					{{ loop.index }}
+				</th>
+				<td>{{ client.name }}</td>
+				<td>{{ client.email }}</td>
+				<td>{{ client.phone }}</td>
+				<td>{{ client.campaigns | length() }}</td>
+				<td hx-delete="{{ url_for('client.delete_client', client_id=client.id) }}" hx-trigger="click" hx-target="closest tr" hx-swap="delete" hx-confirm="Are you sure you wish to delete client {{ client.name }}">
+					<button class="btn btn-outline-danger px-2">Delete</button>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		<caption>Total client: {{ ns.total }}</caption>
+	</table>
+</div>
+{% endblock %}

@@ -38,6 +38,8 @@ def create_app():
     app.register_blueprint(campaign_bp, url_prefix="/campaign")
     from app.lead import bp as lead_bp
     app.register_blueprint(lead_bp, url_prefix="/lead")
+    from app.admin import bp as admin_bp
+    app.register_blueprint(admin_bp, url_prefix="/admin")
     from app.routes import bp
     app.register_blueprint(bp)
     return app

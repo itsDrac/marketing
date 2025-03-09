@@ -58,6 +58,7 @@ class CallHelper:
     def get_call_transcription(self, call):
         headers = {"Authorization": b"Basic "+self.aircall_token}
         # Get the calls transcription from aircall.
+        print(f"Call id is {call['id']}")
         res = rq.get(AIRCALL_URL+f"/calls/{call['id']}/transcription", headers=headers)
         # Check if the participant_type is external then add lead before the text.
         if not res.status_code == 200:

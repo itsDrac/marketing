@@ -62,6 +62,12 @@ def sync_transactions():
     if not data:
         return redirect(url_for("campaign.list_leads", camp_id=campaign_id))
     existingClient, existingCampaign = data
+    if existingClient.fetch_date:
+        last_date = existingClient.fetch_date
+        today_date = date.today()
+        differenct = (today_date-last_date).days
+        if differenct < 1:
+            return "Sync transactions limit reached, Please try in some days"
     apiData = get_transactions(existingClient, existingCampaign)
     if not apiData:
         flash("Some error came when getting transactions from bank", "danger")
@@ -72,6 +78,8 @@ def sync_transactions():
         message = "Done! successfuly added new transactions"
     else:
         message = "Checked No New transactions"
+    existingClient.fetch_date = date.today()
+    db.session.commit()
     return message
 
 
@@ -103,13 +111,15 @@ def add_bank_transactions(transactions, existingCampaign):
     bankTransactions = []
     for transaction in transactions:
         q = (
-            db.select(LeadModel)
-            .where(LeadModel.fullname.ilike(f"{transaction.get('counterpartName')}%"))
+            db.select(BankTransactionModel)
+            .where(BankTransactionModel.finapi_id == transaction.get("id"))
+            .join(LeadModel, LeadModel.id == BankTransactionModel.lead_id)
             .where(LeadModel.campaign_id == existingCampaign.id)
             )
-        existingLead = db.session.scalar(q)
-        if not existingLead:
+        existingTransaction = db.session.scalar(q)
+        if existingTransaction:
             continue
+        existingLead = db.session.get(LeadModel, transaction["lead_id"])
         newBankTransaction = BankTransactionModel(
             finapi_id=transaction.get("id"),
             date=date.fromisoformat(transaction.get("bankBookingDate")),
@@ -198,6 +208,7 @@ def sync_calls():
             duration=call["duration"],
             date=helper.convert_date(call["started_at"]),
             summary=transaction,
+            aircall_number=call["number"]["digits"],
             number=call['raw_digits'],
             direction=call["direction"],
             lead_id=existingLead.id,

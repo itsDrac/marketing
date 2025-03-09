@@ -7,7 +7,7 @@
 		{% endif %}
 	</th>
 	<td>{{ campaign.name }}</td>
-	<td>{{ campaign.token }}</td>
+	<td><a href="{{ url_for('lead.add_lead', token=campaign.token) }}">Copy campaign link</a></td>
 	<td>{{ campaign.start_date }}</td>
 	<td>
 	{% if campaign.end_date %}

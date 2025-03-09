@@ -1,6 +1,6 @@
 from app import db
 from app.agency import bp
-from app.utils import current_agency, email_server_choices
+from app.utils import current_agency
 from app.agency.forms import LoginForm, RegisterForm
 from app.client.forms import ClientForm
 from app.client.bank_handler import create_customer
@@ -61,7 +61,6 @@ def logout():
 def list_clients():
     headers = {}
     form = ClientForm()
-    form.email_server.choices = email_server_choices
     if form.validate_on_submit():
         newClient = ClientModel(
             name=form.name.data,
@@ -70,16 +69,12 @@ def list_clients():
             agency_id=current_agency.id,
             agency=current_agency
             )
-        if form.email_password.data:
-            newClient.email_password = form.email_password.data
-        if form.email_server.data:
-            newClient.email_server = form.email_server.data
         if form.aircall_id.data:
             newClient.aircall_id = form.aircall_id.data
         if form.aircall_key.data:
             newClient.aircall_key = form.aircall_key.data
-        newClient.add_bank_info()
         db.session.add(newClient)
+        newClient.add_bank_info()
         db.session.commit()
         create_customer(newClient)
         return render_template("get_client.html", client=newClient)

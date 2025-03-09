@@ -1,0 +1,28 @@
+<table class="table table-striped table-hover table-bordered">
+	<thead>
+		<tr>
+			<th scope="col">#</th>
+			<th scope="col">Name</th>
+			<th scope="col">Email</th>
+			<th scope="col">Action</th>
+		</tr>
+	</thead>
+	<tbody class="table-group-divider" id="client-table-body">
+		{% set ns = namespace(total=0) %}
+		{% for agency in agencies %}
+		{% if loop.first %}
+		{% set ns.total = loop.length %}
+		{% endif %}
+			<tr>
+				<th scope="row">
+					{{ loop.index }}
+				</th>
+				<td>{{ agency.name }}</td>
+				<td>{{ agency.email }}</td>
+				<td><a href="{{ url_for('admin.all_clients', agency_id=agency.id) }}" class="btn btn-warning">view clients</a></td>
+			</tr>
+		{% endfor %}
+	</tbody>
+	<caption>Total agencies: {{ ns.total }}</caption>
+</table>
+

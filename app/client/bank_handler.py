@@ -47,7 +47,6 @@ def create_customer(existingClient):
     headers = {
         "authorization": token
     }
-    print(token)
     res = rq.post(BASE_URL+"/api/v2/users", json=data, headers=headers)
     if res.status_code == 201:
         return True
@@ -79,23 +78,30 @@ def get_webform_link(existingClient):
 
 
 def get_transactions(existingClient, existingCampaign):
-    params = {
-        "view": "userView",
-        "minBankBookingDate": existingCampaign.start_date.isoformat(),
-        "maxBankBookingDate": existingCampaign.end_date or date.today().isoformat(),
-        "direction": "income",
-        "purpose": existingCampaign.name,
-        "perPage": 100,
-        "order": "bankBookingDate,desc",
-        "includeChildCategories": False,
-    }
     token = _user_access_token(existingClient)
     headers = {
         "authorization": token
     }
-    res = rq.get(BASE_URL+"/api/v2/transactions", headers=headers, params=params)
-    if res.status_code == 200:
-        return res.json()
+    apiData = {"transactions": []}
+    for lead in existingCampaign.leads:
+        params = {
+            "view": "userView",
+            "minBankBookingDate": existingCampaign.start_date.isoformat(),
+            "maxBankBookingDate": existingCampaign.end_date or date.today().isoformat(),
+            "direction": "income",
+            "counterpart": lead.fullname,
+            "perPage": 100,
+            "order": "bankBookingDate,desc",
+            "includeChildCategories": False,
+        }
+        res = rq.get(BASE_URL+"/api/v2/transactions", headers=headers, params=params)
+        if res.status_code == 200:
+            transactions = res.json().get("transactions")
+            for transaction in transactions:
+                transaction["lead_id"] = lead.id
+                apiData["transactions"].append(transaction)
+    if apiData["transactions"]:
+        return apiData
     return False
 
 
@@ -105,4 +111,6 @@ def delete_user(existingClient):
         "authorization": token
     }
     res = rq.delete(BASE_URL+"/api/v2/users", headers=headers)
+    print(res.json())
+    print(res.status_code)
     return res.status_code == 200

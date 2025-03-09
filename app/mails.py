@@ -13,6 +13,7 @@ KEYWORDS = [
     "Kosten und Zahlung",
     "Faktura",
     "Kundenauftrag",
+    "Gesamtbetrag",
     "Liefer und Rechnungsinformationen"
 ]
 
@@ -46,7 +47,8 @@ class MailHelper:
         result = None
         try:
             mb = MailBox(self.domain)
-            mb.login(self.existingClient.email, self.existingClient.email_password, self.folder)
+            decrypted_email_password = self.existingClient.get_decrypted_password()
+            mb.login(self.existingClient.email, decrypted_email_password, self.folder)
             result = True
         except Exception:
             result = False
@@ -55,7 +57,8 @@ class MailHelper:
         return result
 
     def get_mails(self, existingCampaign):
-        with MailBox(self.domain).login(self.existingClient.email, self.existingClient.email_password) as mb:  # noqa E501
+        decrypted_email_password = self.existingClient.get_decrypted_password()
+        with MailBox(self.domain).login(self.existingClient.email, decrypted_email_password) as mb:  # noqa E501
             mb.folder.set(self.folder)
             criteria = A(
                 OR(subject=KEYWORDS),

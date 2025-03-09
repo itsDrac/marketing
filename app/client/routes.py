@@ -1,7 +1,7 @@
 from app import db
 from app.client import bp
 from app.client.bank_handler import get_webform_link, delete_user
-from app.client.forms import ClientEditForm
+from app.client.forms import ClientEditForm, ClientUpdateForm
 from app.campaign.forms import CampaignForm
 from app.models import Client as ClientModel, Campaign as CampaignModel
 from app.utils import current_agency, email_server_choices
@@ -12,7 +12,6 @@ from flask_login import login_required
 @bp.route('/list-campaigns', methods=["GET", "POST"])
 @login_required
 def list_campaigns():
-    print(request.method)
     # TODO: Fix bug when form throw error it should not return client_page.html
     client_id = request.args.get("client_id")
     current_client = db.get_or_404(ClientModel, client_id)
@@ -33,6 +32,7 @@ def list_campaigns():
         )
         db.session.add(newCampaign)
         db.session.commit()
+        db.session.refresh(newCampaign)
         newCampaign.make_token()
         db.session.commit()
         return render_template("get_campaign.html", campaign=newCampaign)
@@ -66,7 +66,7 @@ def delete_client():
     db.session.delete(existingClient)
     db.session.commit()
     flash("Client deleted", "danger")
-    return "Client deleted."
+    return "Client deleted.", headers
 
 
 @bp.route("/edit-client", methods=["GET", "POST"])
@@ -84,12 +84,10 @@ def edit_client():
         existingClient.name = form.name.data
         existingClient.email = form.email.data.lower()
         existingClient.phone = form.phone.data
-        existingClient.email_password = form.email_password.data
         existingClient.email_server = form.email_server.data
         existingClient.aircall_id = form.aircall_id.data
         existingClient.aircall_key = form.aircall_key.data
         db.session.commit()
-        print(existingClient)
         return redirect(url_for('agency.list_clients'))
     form.pre_fill_data(existingClient)
     return render_template(
@@ -98,6 +96,44 @@ def edit_client():
         existingClient=existingClient,
         form=form
     )
+
+
+@bp.route("get-update-client-link", methods=["PUT"])
+@login_required
+def get_update_client_link():
+    client_id = request.args.get("client_id")
+    q = (
+        db.select(ClientModel)
+        .where(ClientModel.id == int(client_id))
+        .where(ClientModel.agency == current_agency)
+    )
+    existingClient = db.session.scalar(q)
+    if not existingClient:
+        return render_template("get_client_token.html")
+    token = existingClient.get_client_token()
+    return render_template("get_client_token.html", token=token)
+
+
+@bp.route("update-client/<token>", methods=["GET", "POST"])
+def update_client(token):
+    client_id = ClientModel.verify_client_token(token)
+    form = ClientUpdateForm()
+    form.email_server.choices = email_server_choices
+    if not client_id:
+        return render_template("update_client.html", msg="no client", title="Update Client details")
+    q = (
+        db.select(ClientModel)
+        .where(ClientModel.id == int(client_id))
+    )
+    existingClient = db.session.scalar(q)
+    if form.validate_on_submit():
+        encrypted_password = ClientModel.get_encrypted_password(form.email_password.data)
+        existingClient.email_password = encrypted_password
+        existingClient.email_server = form.email_server.data
+        db.session.commit()
+        flash("Client Updated! thanks.", "success")
+    form.pre_fill_details(name=existingClient.name, email=existingClient.email)
+    return render_template("update_client.html", form=form, title="Update Client details")
 
 
 @bp.route("connect-bank", methods=["PUT"])
@@ -127,7 +163,6 @@ def connect_bank():
 
 @bp.route("bank-form-connected", methods=["POST"])
 def bank_form_connected():
-    print("This is called")
     data = request.json
     q = (
         db.select(ClientModel).

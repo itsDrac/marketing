@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% if title is defined %}
+{% block head %}
+<title>{{ title }} | Marketing Agency</title>
+{% endblock %}
+{% endif %}
+{% block body %}
+<div class="container-xl">
+	<span class="display-1">Admin View</span>
+	<p class="mt-2">Below is the list of all the agencies registered in the application.</p>
+	{% include "list_agencies.html" ignore missing with context %}
+</div>
+{% endblock %}

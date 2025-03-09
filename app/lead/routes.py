@@ -15,7 +15,7 @@ from flask_login import login_required
 @bp.route("/add-lead", methods=["GET", "POST"])
 def add_lead():
     if request.method == "POST":
-        campaignToken = request.headers.get("Campaign-Token")
+        campaignToken = request.args.get("token")
         if not campaignToken:
             return "No token found", 403
         existingCampaign = CampaignModel.get_campaign_by_token(campaignToken)

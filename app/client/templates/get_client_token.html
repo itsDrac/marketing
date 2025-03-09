@@ -1,0 +1,5 @@
+{% if token %}
+<a href="{{ url_for('client.update_client', _external=True, _scheme='https', token=token) }}">Copy this link</a>
+{% else %}
+<p>No client found</p>
+{% endif %}

@@ -36,11 +36,7 @@
 					{{ form.email.label(class_="form-label my-2") }}
 					{{ render_field(form.email, class_="form-control"+(" is-invalid" if form.email.errors else ""), placeholder="example@gmail.com") }}
 					{{ form.phone.label(class_="form-label my-2") }}
-					{{ render_field(form.phone, class_="form-control"+(" is-invalid" if form.email_password.errors else "")) }}
-					{{ form.email_password.label(class_="form-label my-2") }}
-					{{ render_field(form.email_password, class_="form-control"+(" is-invalid" if form.email_password.errors else "")) }}
-					{{ form.email_server.label(class_="form-label my-2") }}
-					{{ render_field(form.email_server, class_="form-select"+(" is-invalid" if form.email_server.errors else "")) }}
+					{{ render_field(form.phone, class_="form-control"+(" is-invalid" if form.phone.errors else "")) }}
 					{{ form.aircall_id.label(class_="form-label my-2") }}
 					{{ render_field(form.aircall_id, class_="form-control"+(" is-invalid" if form.aircall_id.errors else "")) }}
 					{{ form.aircall_key.label(class_="form-label my-2") }}

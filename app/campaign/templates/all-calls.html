@@ -19,7 +19,7 @@
 			<td>{{ call.duration }} secs</td>
 			<td>{{ call.direction }}</td>
 			<td>
-				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#transcriptionModel">
+				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#transcriptionModel-{{loop.index}}">
 					view transcription
 				</button>
 			</td>
@@ -29,20 +29,20 @@
 				</a>
 			</td>
 		</tr>
+
+		<div class="modal fade" id="transcriptionModel-{{loop.index}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-xl">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5" id="exampleModalLabel">Transcription</h1>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<pre id="call-transcription">{{ call.summary }}</pre>
+					</div>
+				</div>
+			</div>
+		</div>
 		{% endfor %}
 	</tbody>
 </table>
-
-<div class="modal fade" id="transcriptionModel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-xl">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h1 class="modal-title fs-5" id="exampleModalLabel">Transcription</h1>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<pre id="call-transcription"></pre>
-			</div>
-		</div>
-	</div>
-</div>

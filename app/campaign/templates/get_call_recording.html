@@ -4,7 +4,8 @@
 			<th scope="col">#</th>
 			<th scope="col">Lead name</th>
 			<th scope="col">Lead Email</th>
-			<th scope="col">Phone</th>
+			<th scope="col">Airecall Number</th>
+			<th scope="col">Phone Number</th>
 			<th scope="col">date</th>
 			<th scope="col">Length of call</th>
 			<th scope="col">Flow of call</th>
@@ -17,6 +18,7 @@
 			<th scope="row">{{ loop.index }}</th>
 			<td>{{ recording.lead.fullname }}</td>
 			<td>{{ recording.lead.email }}</td>
+			<td>{{ recording.aircall_number }}</td>
 			<td>{{ recording.number }}</td>
 			<td>{{ recording.date.strftime("%d-%b-%Y %I:%M:%S %p") }}</td>
 			<td>{{ recording.duration }} secs</td>

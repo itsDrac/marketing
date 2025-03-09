@@ -1,12 +1,16 @@
 from app import db, login_manager
+from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from cryptography.fernet import Fernet
 from typing import List, Optional
 from datetime import date, datetime
+from time import time
 import sqlalchemy.orm as so
 import sqlalchemy as sa
 import base64
 import json
+import jwt
 
 
 @login_manager.user_loader
@@ -20,13 +24,18 @@ class Agency(db.Model, UserMixin):
     email: so.Mapped[str] = so.mapped_column(sa.String(50), index=True, unique=True)
     password: so.Mapped[str] = so.mapped_column(sa.String(256),
                                                 init=False, deferred=True)
-    clients: so.Mapped[List["Client"]] = so.relationship(back_populates="agency", init=False)
+    clients: so.Mapped[List["Client"]] = so.relationship(
+            back_populates="agency", cascade="all, delete", init=False
+            )
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
+    def is_admin(self):
+        return self.email in current_app.config['ADMINS']
 
 
 # make a Client class
@@ -44,17 +53,51 @@ class Client(db.Model):
     aircall_key: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), init=False)
     agency_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('agency.id'), index=True)
     agency: so.Mapped["Agency"] = so.relationship(back_populates="clients")
-    campaigns: so.Mapped[List["Campaign"]] = so.relationship(back_populates="client", init=False)
+    fetch_date: so.Mapped[Optional[date]] = so.mapped_column(sa.Date, default=None, init=False)
+    campaigns: so.Mapped[List["Campaign"]] = so.relationship(
+            back_populates="client", cascade="all, delete", init=False
+            )
     is_bank_connected: so.Mapped[bool] = so.mapped_column(
         sa.Boolean(create_constraint=False),
         default=False, init=False
     )
+    # Client class will have one (Agency) to many (Client) connection.
+    # Client class will have one (Client) to many (Campaign) connection.
 
     def add_bank_info(self):
         self.bank_username = f"{self.id}@{self.email}"
         self.bank_password = f"{self.name}@{self.email}"
-# Client class will have one (Agency) to many (Client) connection.
-# Client class will have one (Client) to many (Campaign) connection.
+
+    @staticmethod
+    def verify_client_token(token):
+        try:
+            client_id = jwt.decode(
+                    token, current_app.config["CLIENT_KEY"],
+                    algorithms="HS256"
+                    )["client_id"]
+            return client_id
+        except Exception:
+            return
+
+    def get_client_token(self, expires_in=1800):
+        return jwt.encode(
+                {"client_id": self.id, "exp": time() + expires_in},
+                current_app.config["CLIENT_KEY"], algorithm="HS256"
+            )
+
+    @staticmethod
+    def get_encrypted_password(password):
+        key = current_app.config["EMAIL_PASSWORD_KEY"]
+        f = Fernet(key.encode())
+        password = password.encode()
+        encrypt_password = f.encrypt(password)
+        return encrypt_password.decode("UTF-8")
+
+    def get_decrypted_password(self):
+        key = current_app.config["EMAIL_PASSWORD_KEY"]
+        f = Fernet(key.encode())
+        decrypted_password = f.decrypt(self.email_password)
+        return decrypted_password.decode("UTF-8")
 
 
 class Campaign(db.Model):
@@ -65,7 +108,9 @@ class Campaign(db.Model):
     client: so.Mapped["Client"] = so.relationship(back_populates="campaigns")
     end_date: so.Mapped[Optional[date]] = so.mapped_column(sa.Date)
     start_date: so.Mapped[date] = so.mapped_column(sa.Date, default=date.today)
-    leads: so.Mapped[List["Lead"]] = so.relationship(back_populates="campaign", init=False)
+    leads: so.Mapped[List["Lead"]] = so.relationship(
+            back_populates="campaign", cascade="all, delete", init=False
+            )
 
     def make_token(self):
         strData = json.dumps({
@@ -77,8 +122,9 @@ class Campaign(db.Model):
 
     @staticmethod
     def get_campaign_by_token(token):
-        byteToken = token.encode("utf-8")
-        strData = base64.urlsafe_b64decode(byteToken)
+        # byteToken = token.encode("utf-8")
+        print(token)
+        strData = base64.urlsafe_b64decode(token)
         data = json.loads(strData)
         if not data.get("client_id"):
             print("cant find client_id")
@@ -100,14 +146,17 @@ class Lead(db.Model):
     campaign: so.Mapped["Campaign"] = so.relationship(back_populates="leads")
     bank_transactions: so.Mapped[List["BankTransaction"]] = so.relationship(
         back_populates="lead",
+        cascade="all, delete",
         init=False
     )
     mail_invoices: so.Mapped[List["MailInvoice"]] = so.relationship(
         back_populates="lead",
+        cascade="all, delete",
         init=False
     )
     call_records: so.Mapped[List["CallRecord"]] = so.relationship(
         back_populates="lead",
+        cascade="all, delete",
         init=False
     )
 
@@ -124,7 +173,7 @@ class Lead(db.Model):
 
 class BankTransaction(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True, init=False)
-    finapi_id: so.Mapped[int] = so.mapped_column(sa.BigInteger, nullable=False)
+    finapi_id: so.Mapped[int] = so.mapped_column(sa.BigInteger, nullable=False, index=True)
     date: so.Mapped[date] = so.mapped_column(sa.Date)
     amount: so.Mapped[float] = so.mapped_column(sa.Float(3))
     lead_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('lead.id'), index=True)
@@ -151,3 +200,4 @@ class CallRecord(db.Model):
     direction: so.Mapped[str] = so.mapped_column(sa.String(20))
     lead_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('lead.id'), index=True)
     lead: so.Mapped["Lead"] = so.relationship(back_populates="call_records")
+    aircall_number: so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), default="")

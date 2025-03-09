@@ -1,0 +1,29 @@
+{% from 'macros/form.html' import render_field %}
+{% extends 'base.html' %}
+{% if title is defined %}
+{% block head %}
+<title>{{ title }} | Marketing Agency</title>
+{% endblock %}
+{% endif %}
+{% block body %}
+<div class="container">
+	<div class="row gy-4 justify-content-center">
+		{% if form is defined %}
+		<form class="needs-validation" novalidate method="POST">
+			{{ form.hidden_tag() }}
+			{{ form.name.label(class_="form-label my-2") }}
+			{{ render_field(form.name, class_="form-control"+(" is-invalid" if form.name.errors else ""), placeholder="My client name", disabled=True) }}
+			{{ form.email.label(class_="form-label my-2") }}
+			{{ render_field(form.email, class_="form-control"+(" is-invalid" if form.email.errors else ""), placeholder="example@gmail.com", disabled=True) }}
+			{{ form.email_password.label(class_="form-label my-2") }}
+			{{ render_field(form.email_password, class_="form-control"+(" is-invalid" if form.email_password.errors else "")) }}
+			{{ form.email_server.label(class_="form-label my-2") }}
+			{{ render_field(form.email_server, class_="form-select"+(" is-invalid" if form.email_server.errors else "")) }}
+			{{ render_field(form.submit, class_="btn btn-success my-2 px-4 py-2") }}
+		</form>
+		{% else %}
+		<p class="text-center">Wrong link, Please request for another</p>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}

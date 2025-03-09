@@ -10,18 +10,23 @@
 		<div class="row">
 			<div class="col-md-6 col-12 text-white">
 				<h1 class="display-1 fw-bold">Marketing Tracker</h1>
-				<p>Track your client's sales lead by you.</p>
+				<p>Maximiere deinen Marketing-Erfolg – Echtzeit-Tracking leicht gemacht!. Beginnen Sie Ihre Reise mit uns und verpassen Sie keinen Ihrer potenziellen Verkäufe</p>
 				<ul class="list-group my-2">
-					<li class="list-group-item">Record your leads</li>
-					<li class="list-group-item">Add campaign</li>
-					<li class="list-group-item">Track client's bank transactions.</li>
-					<li class="list-group-item">Track client's mail history.</li>
+					<li class="list-group-item">Notieren Sie Ihre Leads</li>
+					<li class="list-group-item">Kampagne hinzufügen</li>
+					<li class="list-group-item">Mit Webflow verbinden</li>
+					<li class="list-group-item">Erhalten Sie Banküberweisungen</li>
+					<li class="list-group-item">Rechnungsverlauf abrufen</li>
+					<li class="list-group-item">Anrufprotokollbericht abrufen</li>
 				</ul>
 				<a class="btn btn-lg btn-warning px-3" href="mailto:reza@upwork.com">Book Demo</a>
 			</div>
-			<div class="col-6 pt-5">
-				<iframe width="100%" height="350"
+			<div class="col-6 pt-5 align-items-center">
+				<!--
+				<iframe width="100%" height="400"
 				src="https://www.youtube.com/embed/tgbNymZ7vqY">
+				-->
+				<img src="{{ url_for('static', filename='image.png')}}" class="img-fluid">
 				</iframe>
 			</div>
 		</div>
@@ -29,14 +34,48 @@
 </section>
 <section class="my-2">
 	<div class="container">
-		<h1 class="fs-1 fw-medium text-center">Professionelle Rechnungsvorlagen</h1>
-		<p class="text-center">Sie erhalten 8 hochwertig gestaltete Rechnungsvorlagen,<br/>die Sie mit wenigen Klicks an Ihre Farben und Unternehmensdaten anpassen können.</p>
+		<h1 class="fs-1 fw-medium text-center">Warum unsere Software?</h1>
+		<div class="row align-items-start py-2">
+			<div class="col-4">
+				<h3 class="text-center my-2">Email Record</h3>
+				<p class="py-2">Kampagnen-Tracking: „Behalte den Überblick über alle Kanäle – von Social Media bis E-Mail-Marketing.</p>
+			</div>
+			<div class="col-4">
+				<h3 class="text-center my-2">Save Time</h3>
+				<p class="py-2">Echtzeit-Analyse: „Erhalte aktuelle Daten, um schnell Entscheidungen zu treffen.“</p>
+			</div>
+			<div class="col-4">
+				<h3 class="text-center my-2">Incress Your ROI</h3>
+				<p class="py-2">Performance-Optimierung: „Identifiziere erfolgreiche Maßnahmen und steigere deine ROI.“</p>
+			</div>
+		</div>
 	</div>
 </section>
 <section class="bg-warning my-2">
 	<div class="container text-white">
-		<h1 class="fs-1 fw-medium text-center">Komplettpaket für erfolgreiche Rechnungen</h1>
-		<p class="text-center">Sie erhalten 8 hochwertig gestaltete Rechnungsvorlagen,<br/>die Sie mit wenigen Klicks an Ihre Farben und Unternehmensdaten anpassen können.</p>
+		<h1 class="fs-1 fw-medium text-center">„Unsere Kunden vertrauen uns“</h1>
+		<div class="row align-items-start py-2">
+			<div class="col-6">
+				<figure>
+					<blockquote class="blockquote">
+						<p>„Seit wir die Software nutzen, haben wir unseren ROI um 30 % gesteigert.“</p>
+					</blockquote>
+					<figcaption class="blockquote-footer text-white">
+						Anna Müller, <cite title="Source Title">Marketing Managerin bei XYZ GmbH</cite>
+					</figcaption>
+				</figure>
+			</div>
+			<div class="col-6">
+				<figure>
+					<blockquote class="blockquote">
+						<p>„Das Tool ist unglaublich intuitiv und spart mir jede Woche Stunden an Arbeit.“</p>
+					</blockquote>
+					<figcaption class="blockquote-footer text-white">
+						Lukas Meier <cite title="Source Title">Inhaber von ABC Media</cite>
+					</figcaption>
+				</figure>
+			</div>
+		</div>
 	</div>
 </section>
 {% endblock %}
